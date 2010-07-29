@@ -19,5 +19,5 @@
     (map #(zipmap header %) (rest csv-seq))))
 
 (defn parse [path]
-  "Converts a csv file to a lazy sequence of maps of the values where the keys are the forst row"
+  "Converts a csv file to a lazy sequence of maps of the values where the keys are the items in the header row"
   (parse-csv (read-csv path)))
