@@ -1,0 +1,29 @@
+# opencsv-clj
+
+A lazy opencsv (http://opencsv.sourceforge.net/) wrapper in Clojure
+
+## Usage
+
+(require '[opencsv-clj.core :as csv])
+(take 1 (csv/parse "filename"))
+
+## Installation
+
+leiningen
+
+[opencsv-clj "1.0.0-SNAPSHOT"]
+
+maven
+
+<dependency>
+  <groupId>opencsv-clj</groupId>
+  <artifactId>opencsv-clj</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</dependency>
+
+## License
+
+MIT Licensed
+
+
+
