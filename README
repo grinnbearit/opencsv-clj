@@ -23,7 +23,9 @@ maven
 
 ## License
 
-MIT Licensed
+Copyright (C) 2010 Sidhant Godiwala
+
+Distributed under the Eclipse Public License, the same as Clojure.
 
 
 
