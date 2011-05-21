@@ -4,23 +4,33 @@
   (:import [au.com.bytecode.opencsv CSVReader CSVWriter])
   (:require [clojure.java.io :as io]))
 
-(defn- read-csv [path]
-  "Reads a csv file and generates a lazy sequence of rows"
-  (let [buffer (CSVReader. (io/reader path))]
+
+(defn- read-csv [path delimiter]
+  "Reads a csv file and generates a lazy sequence of rows. If delimiter is nil, the default (\\,) is used."
+  (let [buffer (if (nil? delimiter)
+		 (CSVReader. (io/reader path))
+		 (CSVReader. (io/reader path) delimiter))]
     (lazy-seq
      (loop [res []]
        (if-let [nxt (.readNext buffer)]
          (recur (conj res (seq nxt)))
          res)))))
 
+
+
 (defn- parse-csv [csv-seq]
   "Converts a lazy sequence of rows to a lazy sequence of maps"
   (let [header (first csv-seq)]
     (map #(zipmap header %) (rest csv-seq))))
 
-(defn parse [path]
-  "Converts a csv file to a lazy sequence of maps of the values where the keys are the items in the header row"
-  (parse-csv (read-csv path)))
+(defn parse
+  "Converts a csv file to a lazy sequence of maps of the values where the keys are the items in the header row by default.
+The delimiter used by the parser can be changed by using the delimiter arg. When map-to-headers? is false, each line is returned represented as a vec."
+  ([path delimiter map-to-headers?] (if map-to-headers?
+				      (parse-csv (read-csv path delimiter))
+				      (vec (read-csv path delimiter))))
+  ([path delimiter] (parse-csv (read-csv path delimiter false)))
+  ([path] (parse-csv (read-csv path nil false))))
 
 (defn dump
   "Dumps a sequence of maps to a file given by path, pass a header to specify the order and columns to be written"
