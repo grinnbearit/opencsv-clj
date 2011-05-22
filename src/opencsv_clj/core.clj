@@ -4,51 +4,42 @@
   (:import [au.com.bytecode.opencsv CSVReader CSVWriter])
   (:require [clojure.java.io :as io]))
 
-
-(defn- read-csv-from-reader [reader delimiter]
-  (let [buffer (if (nil? delimiter)
-		 (CSVReader. reader)
-		 (CSVReader. reader delimiter))]
+(defn- read-csv [reader delimiter quoter]
+  "Reads a csv file and generates a lazy sequence of rows"
+  (let [buffer (CSVReader. reader delimiter quoter)]
     (lazy-seq
      (loop [res []]
        (if-let [nxt (.readNext buffer)]
 	 (recur (conj res (seq nxt)))
 	 res)))))
 
-(defn- read-csv [path delimiter]
-  "Reads a csv file and generates a lazy sequence of rows. If delimiter is nil, the default (\\,) is used."
-  (read-csv-from-reader (io/reader path) delimiter))
-
-(defn- read-csv-from-string [str delimiter]
-  "Reads a csv string and generates a lazy sequence of rows. If delimiter is nil, the default (\\,) is used."
-  (read-csv-from-reader (java.io.StringReader. str) delimiter))
-
-
 (defn- parse-csv [csv-seq]
   "Converts a lazy sequence of rows to a lazy sequence of maps"
   (let [header (first csv-seq)]
     (map #(zipmap header %) (rest csv-seq))))
 
-
 (defn parse
-  "Converts a csv file to a lazy sequence of maps of the values where the keys are the items in the header row by default.
-The delimiter used by the parser can be changed by using the delimiter arg. When map-to-headers? is false, each line is returned represented as a vec."
-  ([path delimiter map-to-headers?] (if map-to-headers?
-				      (parse-csv (read-csv path delimiter))
-				      (map vec (read-csv path delimiter))))
-  ([path delimiter] (parse-csv (read-csv path delimiter false)))
-  ([path] (parse-csv (read-csv path nil false))))
+  "Converts a csv reader to a lazy sequence of vectors of the values or the values mapped to the header.
+    Options:
+    :mapped - if true, returns the values of each row mapped to the header(default false)
+    :delimiter - the delimiter char used by the parser (default \\,,)
+    :quoter  - the quote char used by the parser (default \\\" "
+  [reader & {:keys [mapped delimiter quoter]
+	     :or {mapped false delimiter \, quoter \"}}]
+  (let [csv-seq (read-csv reader delimiter quoter)]
+    (if mapped
+      (parse-csv csv-seq)
+      (map vec csv-seq))))
 
+(defn parse-file
+  "Converts a csv file to a lazy sequence of maps of the values where the keys are the items in the header row. Takes the same options as (parse)"
+  [f & opts]
+  (apply parse (io/reader f) opts))
 
 (defn parse-string
-  "Converts a csv string to a lazy sequence of maps of the values where the keys are the items in the header row by default.
-The delimiter used by the parser can be changed by using the delimiter arg. When map-to-headers? is false, each line is returned represented as a vec."
-  ([path delimiter map-to-headers?] (if map-to-headers?
-				      (parse-csv (read-csv-from-string path delimiter))
-				      (map vec (read-csv-from-string path delimiter))))
-  ([path delimiter] (parse-csv (read-csv-from-string path delimiter false)))
-  ([path] (parse-csv (read-csv-from-string path nil false))))
-
+  "Converts a csv string to a lazy sequence of maps of the values where the keys are the items in the header row. Takes the same options as (parse)"
+  [s & opts]
+  (apply parse (java.io.StringReader. s) opts))
 
 (defn dump
   "Dumps a sequence of maps to a file given by path, pass a header to specify the order and columns to be written"
@@ -58,9 +49,9 @@ The delimiter used by the parser can be changed by using the delimiter arg. When
   ([path csv-seq header]
      (with-open [writer (io/writer path)]
        (let [csv-writer (CSVWriter. writer)]
-         (.. csv-writer  (writeNext (into-array (map str header))))
-         (doseq [entry (map  (comp into-array
-                                   (fn [csv-entry] (map (comp str #(get csv-entry %))
-                                                       header)))
-                             csv-seq)]
-           (.. csv-writer (writeNext entry)))))))
+	 (.. csv-writer  (writeNext (into-array (map str header))))
+	 (doseq [entry (map  (comp into-array
+				   (fn [csv-entry] (map (comp str #(get csv-entry %))
+							header)))
+			     csv-seq)]
+	              (.. csv-writer (writeNext entry)))))))
