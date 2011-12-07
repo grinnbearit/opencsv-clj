@@ -35,5 +35,7 @@
 	  "bears: dancing"))))
 
 
-;; TODO: test that proves that even on a large file, no
-;; OutOfMemoryErrors are thrown, which should be the case.
+(deftest reading-large-files
+  (is (= ["author" "book"]
+         (first (parse-file "test/test.csv")))))
+

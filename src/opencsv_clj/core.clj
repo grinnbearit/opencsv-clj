@@ -6,12 +6,11 @@
 
 (defn- read-csv [reader delimiter quoter]
   "Reads a csv file and generates a lazy sequence of rows"
-  (let [buffer (CSVReader. reader delimiter quoter)]
-    (lazy-seq
-     (loop [res []]
-       (if-let [nxt (.readNext buffer)]
-	 (recur (conj res (seq nxt)))
-	 res)))))
+  (let [buffer (CSVReader. reader delimiter quoter)
+        read (fn read-buffer [buffer]
+               (when-let [nxt (.readNext buffer)]
+                 (lazy-seq (cons nxt (read-buffer buffer)))))]
+    (read buffer)))
 
 (defn- parse-csv [csv-seq]
   "Converts a lazy sequence of rows to a lazy sequence of maps"
