@@ -25,7 +25,7 @@ These three functions can take three options:
 
 * :delimiter - the delimiterchar used by the parser (default \,)
 
-    (csv/parse-string "a+b+c")
+    (csv/parse-string "a+b+c" :delimiter \+)
     => (["a" "b" "c"])
 
 * :quoter - the quote character used by the parser (default \")
