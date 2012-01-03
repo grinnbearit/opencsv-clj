@@ -39,14 +39,14 @@ These three functions can take three options:
 
 Leiningen: 
 
-    [opencsv-clj "1.2.0"]
+    [opencsv-clj "1.2.1"]
 
 Maven:
 
     <dependency>
       <groupId>opencsv-clj</groupId>
       <artifactId>opencsv-clj</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
     </dependency>
 
 ## License
