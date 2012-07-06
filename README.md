@@ -16,7 +16,7 @@ or directly from a string:
 or from any reader you want, really:
    (csv/parse (MyAwesomeReader.))
 
-These three functions can take three options: 
+These three functions can take three options:
 
 * :mapped - when true, the function returns a map for each line with the csv's header (first line) as keys (default: false)
 
@@ -37,7 +37,7 @@ These three functions can take three options:
 
 ## Installation
 
-Leiningen: 
+Leiningen:
 
     [opencsv-clj "1.2.1"]
 
@@ -48,6 +48,13 @@ Maven:
       <artifactId>opencsv-clj</artifactId>
       <version>1.2.1</version>
     </dependency>
+
+
+## Contributors
+
+* [Robin Ramael](https://github.com/RobinRamael)
+* [Zach Tellman](https://github.com/ztellman)
+
 
 ## License
 
