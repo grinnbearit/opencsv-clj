@@ -45,4 +45,5 @@
                   :as options}]
   (let [csv-writer (CSVWriter. writer separator quote)]
     (doseq [entry (map into-array data)]
-      (.writeNext csv-writer entry))))
+      (.writeNext csv-writer entry))
+    (.close csv-writer)))

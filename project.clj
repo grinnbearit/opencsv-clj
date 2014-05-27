@@ -1,4 +1,4 @@
-(defproject opencsv-clj "2.0.1"
+(defproject opencsv-clj "2.0.2"
   :description "clojure wrapper for opencsv"
   :license {:name "Eclipse"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
