@@ -47,9 +47,11 @@ air, moon roof, loaded\",4799.00")
 
 (deftest read-csv-file
   (let [file (File/createTempFile "opencsv-clj-test" ".csv")]
-    (spit file simple)
-    (let [data (csv/read-csv file)]
-      (is (= ["Year" "Make" "Model"] (first data))))))
+    (try
+      (spit file simple)
+      (let [data (csv/read-csv file)]
+        (is (= ["Year" "Make" "Model"] (first data))))
+      (finally (.delete file)))))
 
 (deftest read-doublequote-format
   (is (= [["quoted:" "escaped\"quotes\""]]
@@ -76,3 +78,19 @@ air, moon roof, loaded\",4799.00")
       (csv/write-csv string-writer (csv/read-csv simple)
                      :quote CSVWriter/NO_QUOTE_CHARACTER)
       (is (= simple (str string-writer))))))
+
+(deftest write-csv-file
+  (let [rows [["1" "2" "3"] ["4" "5" "6"]]
+        file (File/createTempFile "opencsv-clj-test" ".csv")]
+    (try
+      (is (instance? File (csv/write-csv file rows)))
+      (is (= rows (csv/read-csv file)))
+      (finally (.delete file)))))
+
+(deftest write-alternate-escape-char
+  (let [rows [["\"hello\"" "'world'"]]
+        file (File/createTempFile "opencsv-clj-test" ".csv")]
+    (try
+      (is (instance? File (csv/write-csv file rows :separator \' :quote \" :escape \\)))
+      (is (= rows (csv/read-csv file :separator \' :quote \" :escape \\)))
+      (finally (.delete file)))))
