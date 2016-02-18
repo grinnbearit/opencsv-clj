@@ -52,7 +52,7 @@ Maven:
 
 * [Robin Ramael](https://github.com/RobinRamael)
 * [Zach Tellman](https://github.com/ztellman)
-
+* [Ryan Sundberg](https://github.com/sundbry)
 
 ## License
 

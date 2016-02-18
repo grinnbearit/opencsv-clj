@@ -3,6 +3,11 @@
 /classes
 /checkouts
 pom.xml
+pom.xml.asc
 *jar
 lib
 classes
+.lein*
+.nrepl-port
+*.swp
+*.swo
