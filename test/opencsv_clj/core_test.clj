@@ -51,10 +51,28 @@ air, moon roof, loaded\",4799.00")
     (let [data (csv/read-csv file)]
       (is (= ["Year" "Make" "Model"] (first data))))))
 
+(deftest read-doublequote-format
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:,\"escaped\"\"quotes\"\"\"\n"))))
+
+(deftest read-alternate-escape-char
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:,\"escaped\"\"quotes\"\"\"\n")))
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:,\"escaped\"\"quotes\"\"\"\n" :escape \")))
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:|\"escaped\"\"quotes\"\"\"\n" :separator \| :escape \")))
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:|\"escaped\"\"quotes\"\"\"\n" :separator \| :quote \" :escape \")))
+  (is (= [["quoted:" "escaped\"quotes\""]]
+         (csv/read-csv "quoted:,\"escaped\\\"quotes\\\"\"\n" :escape \\)))
+  (is (= [["\"foo\"" "\"bar\""]]
+         (csv/read-csv "\"\\\"foo\\\"\",\"\\\"bar\\\"\"\n" :escape \\))))
+
 (deftest read-and-write
   (testing
     "reading-and-writing"
     (let [string-writer (StringWriter.)]
       (csv/write-csv string-writer (csv/read-csv simple)
-                 :quote CSVWriter/NO_QUOTE_CHARACTER)
+                     :quote CSVWriter/NO_QUOTE_CHARACTER)
       (is (= simple (str string-writer))))))
