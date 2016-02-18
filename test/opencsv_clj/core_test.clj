@@ -1,7 +1,7 @@
 (ns opencsv-clj.core-test
   (:require [clojure.test :refer :all]
             [opencsv-clj.core :as csv])
-  (:import [java.io StringWriter]
+  (:import [java.io File StringWriter]
            [au.com.bytecode.opencsv CSVWriter]))
 
 (def ^{:private true} simple
@@ -44,6 +44,12 @@ air, moon roof, loaded\",4799.00")
       (is (= 5 (count (first csv))))
       (is (= ["1997" "Ford" "E350" "ac, abs, moon" "3000.00"] (first csv)))
       (is (= ["1996" "Jeep" "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded" "4799.00"] (last csv))))))
+
+(deftest read-csv-file
+  (let [file (File/createTempFile "opencsv-clj-test" ".csv")]
+    (spit file simple)
+    (let [data (csv/read-csv file)]
+      (is (= ["Year" "Make" "Model"] (first data))))))
 
 (deftest read-and-write
   (testing
